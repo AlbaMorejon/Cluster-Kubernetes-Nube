@@ -1,0 +1,2 @@
+Como trabajo de fin de grado superior de ASIR planteamos el proyecto de creación de un cluster de kubernetes en la nube con el objetivo de diseñar, implementar y validar un clúster de alta disponibilidad para dar diversos servicios a un cliente. 
+Esto implica configurar un entorno que garantice la disponibilidad continua de las aplicaciones desplegadas, así como la gestión de los recursos de manera automatizada, proporcionando una infraestructura confiable y eficiente para las operaciones que se vayan a realizar.
