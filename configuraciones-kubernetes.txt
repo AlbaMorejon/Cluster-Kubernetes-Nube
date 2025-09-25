@@ -1,0 +1,158 @@
+configmap.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-index-html
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Demostración TFG Kubernetes</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+                color: #333;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+            header {
+                background-color: #007acc;
+                color: white;
+                padding: 10px 0;
+                text-align: center;
+            }
+            header h1 {
+                margin: 0;
+                font-size: 2.5em;
+            }
+            header p {
+                margin: 5px 0 10px;
+                font-size: 1.2em;
+            }
+            .container {
+                flex: 1;
+                padding: 20px;
+            }
+            .section-title {
+                font-size: 2em;
+                margin-top: 20px;
+            }
+            .section-content {
+                margin-top: 10px;
+                font-size: 1.1em;
+                line-height: 1.6;
+            }
+            .demonstration {
+                margin-top: 20px;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .demonstration h3 {
+                margin-top: 0;
+            }
+            .demonstration img {
+                max-width: 100%;
+                border-radius: 8px;
+            }
+            footer {
+                background-color: #333;
+                color: white;
+                text-align: center;
+                padding: 10px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Demostración TFG Kubernetes</h1>
+            <p>Creado por Eduardo Gayo López y Alba Morejón García</p>
+        </header>
+        <div class="container">
+            <section class="demonstration">
+                <h2 class="section-title">Demostración del Proyecto</h2>
+                <div class="section-content">
+                    <p>El siguiente ejemplo muestra cómo Kubernetes gestiona automáticamente el despliegue, escalado y operaciones de las aplicaciones en contenedores. Este despliegue demuestra la funcionalidad y eficiencia del orquestador.</p>
+                    <h3>Despliegue en Kubernetes</h3>
+                    <p>La siguiente página personalizada demuestra como el config map desplegado ejecuta nuestro HTML personalizado en cada uno  de los pods que tenemos desplegados, ofreciendo así alta disponibilidad..</p>
+                </div>
+            </section>
+        </div>
+        <footer>
+            <p>&copy; 2024 Eduardo Gayo López y Alba Morejón García. Todos los derechos reservados.</p>
+        </footer>
+    </body>
+    </html>
+
+
+Loadbalancer
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+
+Nginx deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        ibmcloud: albayedu
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html-config
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: index.html
+      volumes:
+      - name: html-config
+        configMap:
+          name: nginx-index-html
+
+
+nodeport
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nodeport-service
+  labels:
+    app: nginx
+spec:
+  selector:
+    app: nginx
+  type: NodePort
+  ports:
+  - port: 8081
+    targetPort: 80
+    # nodePort: 30001
